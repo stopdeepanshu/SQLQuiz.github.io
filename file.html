@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Basics Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        .quiz-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question p {
+            font-weight: bold;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-container">
+        <h1>SQL Basics Quiz</h1>
+        <form id="quizForm">
+            <div id="questionsContainer"></div>
+            <button type="button" id="submitBtn">Submit</button>
+        </form>
+        <div id="results" class="hidden">
+            <h2>Your Results</h2>
+            <p id="score"></p>
+            <p id="percentage"></p>
+            <button id="restartBtn">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "What does SQL stand for?", options: ["Structured Query Language", "Simple Query Language", "Sequential Query Language", "Standard Query Language"], answer: 0 },
+            { question: "What is a primary key in a table?", options: ["A key that uniquely identifies each record in a table", "A key used to reference other tables", "A key used to create an index", "A non-unique key for sorting data"], answer: 0 },
+            { question: "Which datatype is used to store large text data in SQL?", options: ["CLOB", "NUMBER", "DATE", "VARCHAR"], answer: 0 },
+            { question: "What is the purpose of a foreign key?", options: ["To ensure data integrity between tables", "To create unique indexes", "To identify unique rows", "To define default values"], answer: 0 },
+            { question: "Which SQL command is used to remove records?", options: ["DELETE", "DROP", "REMOVE", "TRUNCATE"], answer: 0 },
+            { question: "What does VARCHAR datatype store?", options: ["Variable-length string", "Fixed-length string", "Integer", "Date"], answer: 0 },
+            { question: "Which is a valid constraint in SQL?", options: ["CHECK", "VERIFY", "SORT", "VALIDATE"], answer: 0 },
+            { question: "What does a UNIQUE constraint ensure?", options: ["Values in a column are distinct", "Values are not null", "Values match another table", "Values are numeric"], answer: 0 },
+            { question: "What is the default precision of NUMBER in SQL?", options: ["38", "30", "10", "50"], answer: 0 },
+            { question: "Which datatype is used to store large binary data?", options: ["BLOB", "CLOB", "NUMBER", "DATE"], answer: 0 },
+            { question: "What does a primary key enforce?", options: ["Uniqueness and non-null values", "Uniqueness only", "Non-null values only", "Data type restrictions"], answer: 0 },
+            { question: "What command is used to add data to a table?", options: ["INSERT", "ADD", "CREATE", "MERGE"], answer: 0 },
+            { question: "What does the TRUNCATE command do?", options: ["Deletes all rows from a table", "Deletes specific rows", "Removes table structure", "Renames a table"], answer: 0 },
+            { question: "Which SQL command changes the structure of a table?", options: ["ALTER", "UPDATE", "DROP", "MODIFY"], answer: 0 },
+            { question: "What does the JOIN operation do in SQL?", options: ["Combines rows from two or more tables", "Deletes rows from a table", "Indexes a table", "Updates rows in a table"], answer: 0 },
+            { question: "Which is a valid SQL aggregate function?", options: ["COUNT", "INDEX", "FILTER", "ORDER"], answer: 0 },
+            { question: "What is the maximum size of a VARCHAR2 in SQL?", options: ["4000 bytes", "1000 bytes", "2000 bytes", "Unlimited"], answer: 0 },
+            { question: "What is a tuple in the context of SQL?", options: ["A row in a table", "A column in a table", "A table itself", "A database"], answer: 0 },
+            { question: "What is the main purpose of an RDBMS?", options: ["Store data in tables", "Store data in files", "Enforce file integrity", "Manage transactions"], answer: 0 },
+            { question: "What is normalization in SQL?", options: ["Organizing data to reduce redundancy", "Backing up a database", "Adding constraints", "Indexing a table"], answer: 0 },
+            { question: "Which SQL command creates a new table?", options: ["CREATE", "INSERT", "ALTER", "MERGE"], answer: 0 },
+            { question: "Who is considered the father of SQL?", options: ["Donald D. Chamberlin", "Codd E. F.", "Charles Bachman", "Michael Stonebraker"], answer: 0 },
+            { question: "What is DBMS?", options: ["Database Management System", "Data Base Management Software", "Data Base Modeling Software", "Direct Binary Management System"], answer: 0 },
+            { question: "What does RDBMS stand for?", options: ["Relational Database Management System", "Relational Data Management Software", "Relational Data Management System", "Remote Database Management System"], answer: 0 },
+            { question: "What is the main difference between DBMS and RDBMS?", options: ["RDBMS supports relationships between tables, DBMS does not", "DBMS supports relationships, RDBMS does not", "RDBMS stores data in tables, DBMS stores in files", "RDBMS stores data in files, DBMS stores in tables"], answer: 0 },
+            { question: "What is a database?", options: ["A collection of organized data", "A program to manage data", "A single data item", "A physical storage system"], answer: 0 },
+            { question: "What is a relational model in database?", options: ["A model that stores data in tables", "A model that stores data in files", "A model that stores data in binary", "A model that stores data in graphs"], answer: 0 },
+            { question: "What is a table in SQL?", options: ["A collection of rows and columns", "A collection of columns", "A collection of rows", "A database schema"], answer: 0 },
+            { question: "What is a cell in a table?", options: ["The intersection of a row and column", "A single row", "A single column", "A unique identifier"], answer: 0 },
+            { question: "What is a column in SQL?", options: ["A vertical set of cells", "A horizontal set of rows", "A unique identifier", "A collection of data types"], answer: 0 },
+            { question: "What is a row in SQL?", options: ["A horizontal set of cells", "A vertical set of columns", "A unique identifier", "A collection of records"], answer: 0 },
+            { question: "What is a tuple in SQL?", options: ["A row in a table", "A column in a table", "A unique identifier", "A set of operations"], answer: 0 },
+            { question: "What are the types of validations in SQL?", options: ["Integrity, Domain, and User-defined", "Data Type, Range, and Syntax", "Key-based, Range, and Data Type", "Integrity, Syntax, and Referential"], answer: 0 },
+            { question: "What does VARCHAR data type store?", options: ["Variable-length string", "Fixed-length string", "Date", "Binary data"], answer: 0 },
+            { question: "What does VARCHAR2 data type store?", options: ["Variable-length string", "Fixed-length string", "Integer", "Large text data"], answer: 0 },
+            { question: "What is the NUMBER data type used for?", options: ["Storing numeric values", "Storing string data", "Storing dates", "Storing large text data"], answer: 0 },
+            { question: "What is precision in SQL data types?", options: ["The total number of digits in a number", "The number of decimal places", "The size of the data type", "The type of the data"], answer: 0 },
+            { question: "What is scale in SQL data types?", options: ["The number of digits to the right of the decimal point", "The total number of digits in a number", "The length of the data type", "The type of data"], answer: 0 },
+            { question: "What is the purpose of the UNIQUE constraint?", options: ["Ensures all values in a column are distinct", "Ensures values are not null", "Enforces referential integrity", "Prevents data duplication"], answer: 0 },
+            { question: "Which of the following is a valid SQL constraint?", options: ["PRIMARY KEY", "KEY VALUE", "AUTO INCREMENT", "INDEX"], answer: 0 },
+            { question: "What does the PRIMARY KEY constraint do?", options: ["Ensures that each record in a table is unique", "Enforces referential integrity", "Prevents data duplication", "Restricts null values in a column"], answer: 0 },
+            { question: "What is a FOREIGN KEY in SQL?", options: ["A key used to link two tables together", "A key that uniquely identifies records", "A key used for indexing", "A non-unique key for sorting data"], answer: 0 },
+            { question: "What is the difference between a PRIMARY KEY and a FOREIGN KEY?", options: ["A primary key uniquely identifies records, a foreign key links tables", "A foreign key uniquely identifies records, a primary key links tables", "Both keys uniquely identify records", "Both keys link tables"], answer: 0 },
+            { question: "What is the maximum size of a VARCHAR2 column?", options: ["4000 bytes", "2000 bytes", "1000 bytes", "Unlimited"], answer: 0 },
+            { question: "Which datatype is used to store large binary objects?", options: ["BLOB", "CLOB", "DATE", "NUMBER"], answer: 0 },
+            { question: "Which SQL clause is used to filter records?", options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"], answer: 0 },
+            { question: "What is the purpose of the CHECK constraint?", options: ["To validate data based on a condition", "To ensure uniqueness", "To define default values", "To link tables"], answer: 0 },
+            { question: "Which of the following is an example of a large object data type?", options: ["BLOB", "VARCHAR", "DATE", "NUMBER"], answer: 0 },
+            { question: "Which command is used to modify an existing table?", options: ["ALTER", "INSERT", "DELETE", "UPDATE"], answer: 0 },
+            { question: "Which of the following is an aggregate function in SQL?", options: ["COUNT", "SELECT", "INSERT", "DROP"], answer: 0 },
+            { question: "What is an example of a non-relational database?", options: ["MongoDB", "MySQL", "PostgreSQL", "Oracle"], answer: 0 },
+            { question: "What is the default constraint for a column that does not have a value?", options: ["NULL", "DEFAULT", "NOT NULL", "UNIQUE"], answer: 0 },
+            { question: "What is the purpose of the GROUP BY clause?", options: ["To group records based on one or more columns", "To filter records based on a condition", "To sort records", "To create relationships between tables"], answer: 0 },
+            { question: "What is normalization in the context of databases?", options: ["The process of organizing data to avoid redundancy", "The process of indexing data for faster search", "The process of grouping data", "The process of joining multiple tables"], answer: 0 },
+            { question: "What is the purpose of the ORDER BY clause?", options: ["To sort query results", "To filter query results", "To join tables", "To update records"], answer: 0 },
+            { question: "What is a composite key?", options: ["A key made up of two or more columns", "A unique key for each record", "A key that references another table", "A non-unique key"], answer: 0 }
+        ];
+
+        const questionsContainer = document.getElementById("questionsContainer");
+    const resultsContainer = document.getElementById("results");
+    const scoreElement = document.getElementById("score");
+    const percentageElement = document.getElementById("percentage");
+    const submitBtn = document.getElementById("submitBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    function displayQuestions() {
+        questions.forEach((q, index) => {
+            const correctAnswer = { option: q.options[q.answer], i: q.answer };
+            const incorrectOptions = q.options
+                .map((option, i) => ({ option, i }))
+                .filter(opt => opt.i !== q.answer);
+
+            const shuffledCorrectAnswerPosition = Math.floor(Math.random() * (incorrectOptions.length + 1));
+            const finalOptions = [
+                ...incorrectOptions.slice(0, shuffledCorrectAnswerPosition),
+                correctAnswer,
+                ...incorrectOptions.slice(shuffledCorrectAnswerPosition),
+            ];
+
+            const questionDiv = document.createElement("div");
+            questionDiv.classList.add("question");
+            questionDiv.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+
+            finalOptions.forEach(({ option, i }) => {
+                const optionId = `q${index}_o${i}`;
+                questionDiv.innerHTML += `
+                    <label>
+                        <input type="radio" name="q${index}" value="${i}" id="${optionId}">
+                        ${option}
+                    </label><br>`;
+            });
+
+            questionsContainer.appendChild(questionDiv);
+        });
+    }
+
+    function calculateResults() {
+        let score = 0;
+        questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const correctIndex = q.answer;
+            if (selected && parseInt(selected.value) === correctIndex) {
+                score++;
+            } else if (selected) {
+                selected.parentElement.classList.add("wrong");
+            }
+            const correctOption = document.querySelectorAll(`input[name="q${index}"]`)[correctIndex];
+            correctOption.parentElement.classList.add("correct");
+        });
+        return score;
+    }
+
+    submitBtn.addEventListener("click", () => {
+        const score = calculateResults();
+        const percentage = ((score / questions.length) * 100).toFixed(2);
+        scoreElement.textContent = `Your score: ${score}/${questions.length}`;
+        percentageElement.textContent = `Percentage: ${percentage}%`;
+        resultsContainer.classList.remove("hidden");
+        submitBtn.classList.add("hidden");
+    });
+
+    restartBtn.addEventListener("click", () => {
+        window.location.reload();
+    });
+
+    displayQuestions();
+</script>
+</body>
+
+</html>
